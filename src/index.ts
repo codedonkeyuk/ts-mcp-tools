@@ -1,4 +1,3 @@
-// server.ts
 import { McpServer } from "@modelcontextprotocol/server";
 import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
 import { helloWorldTool } from "@mcp/hello-world";
@@ -8,7 +7,6 @@ const server = new McpServer({
   version: "1.0.0",
 });
 
-// v2 API: registerTool(name, config, handler)
 server.registerTool(
   helloWorldTool.name,
   {
