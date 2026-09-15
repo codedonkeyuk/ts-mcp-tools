@@ -17,8 +17,7 @@
     "prebuild": "npx prettier . --check && tsc --noEmit",
     "build": "esbuild src/index.ts --bundle --platform=node --format=esm --banner:js=\"#!/usr/bin/env node\" --outfile=dist/index.js",
     "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
-    "test": "npm test --workspaces --if-present",
-    "coverage": "node --experimental-strip-types --experimental-test-module-mocks --test --experimental-test-coverage \"**/*.test.ts\""
+    "test": "npm test --workspaces --if-present && node --experimental-strip-types --experimental-test-module-mocks --test \"src/**/*.test.ts\""
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
