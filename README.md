@@ -1,4 +1,4 @@
-# ts-lib-template
+# ts-mcp-tools
 
 Node in 2025 implemented support for TS, no need for transpilers until release. This project runs ts natively, and exports ts via typescript compiler as JS module.
 

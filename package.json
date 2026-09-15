@@ -1,32 +1,28 @@
 {
-  "name": "ts-lib-template",
+  "name": "ts-mcp-tools",
   "version": "0.0.1",
   "description": "A simple ts library for use as a template",
-  "homepage": "https://github.com/codedonkeyuk/ts-lib-template#readme",
-  "bugs": {
-    "url": "https://github.com/codedonkeyuk/ts-lib-template/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/codedonkeyuk/ts-lib-template.git"
-  },
   "license": "MIT",
   "author": "Leigh",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "private": true,
+  "workspaces": [
+    "tools/*"
+  ],
   "scripts": {
     "clean": "npx prettier . --write",
     "validate": "tsc --noEmit",
     "prebuild": "npx prettier . --check && tsc --noEmit",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --banner:js=\"#!/usr/bin/env node\" --outfile=dist/index.js",
+    "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
     "test": "node --experimental-strip-types --experimental-test-module-mocks --test \"**/*.test.ts\"",
-    "coverage": "node --experimental-strip-types --experimental-test-module-mocks --test --experimental-test-coverage \"**/*.test.ts\"",
-    "prepare": "husky"
+    "coverage": "node --experimental-strip-types --experimental-test-module-mocks --test --experimental-test-coverage \"**/*.test.ts\""
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
+    "esbuild": "^0.28.2",
     "prettier": "3.9.5",
     "typescript": "^7.0.2"
   }
