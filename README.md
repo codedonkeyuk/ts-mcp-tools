@@ -44,8 +44,8 @@ networks:
 No ports are exposed in the project as is. To see its alive and running use the following commands
 
 ```bash
-docker exec -it custom-mcp-server wget -qO- http://localhost:3000/ping
+docker exec -it ts-mcp-tools wget -qO- http://localhost:3000/ping
 # should return {"status":"ok", "timestamp": "..."}
 
-docker compose logs custom-mcp-server
+docker compose logs ts-mcp-tools
 ```
