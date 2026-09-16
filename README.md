@@ -11,7 +11,7 @@ This is a starter template for a MCP project. Its a multi module project each MC
 | `npm run test`     | run node:test library                                                      |
 | `npm run clean`    | clean project using prettier                                               |
 | `npm run validate` | validate code using typescript compiler. Does not generate files           |
-| `npm run build`    | builds the executable bundle uyusing esbuild                               |
+| `npm run serve`    | serve MCP locally                                                          |
 
 ## Instructions
 
