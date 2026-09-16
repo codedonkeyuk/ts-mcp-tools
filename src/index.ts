@@ -1,10 +1,12 @@
-import { McpServer } from "@modelcontextprotocol/server";
-import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
+import { McpServer, createMcpHandler } from "@modelcontextprotocol/server";
+import { createMcpExpressApp } from "@modelcontextprotocol/express";
+import { toNodeHandler } from "@modelcontextprotocol/node";
 import { helloWorldTool } from "@mcp/hello-world";
+import { type Request, type Response } from "express";
 
 const server = new McpServer({
   name: "ts-mcp-tools-server",
-  version: "1.0.0",
+  version: "2.0.0",
 });
 
 server.registerTool(
@@ -13,18 +15,19 @@ server.registerTool(
     description: helloWorldTool.description,
     inputSchema: helloWorldTool.schema,
   },
-  async (args) => {
-    return await helloWorldTool.execute(args);
-  }
+  helloWorldTool.execute,
 );
 
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("MCP Server running on stdio transport");
-}
+const app = createMcpExpressApp();
 
-main().catch((error) => {
-  console.error("Server crashed:", error);
-  process.exit(1);
+const mcpHandler = createMcpHandler(() => server);
+const nodeHandler = toNodeHandler(mcpHandler);
+
+app.all("/mcp", (req: Request, res: Response) => {
+  void nodeHandler(req, res);
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.error(`MCP Stateless Server running on port ${PORT}`);
 });

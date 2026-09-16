@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  custom-mcp-server:
+    image: node:26-alpine
+    container_name: custom-mcp-server
+    restart: always
+    working_dir: /app
+    volumes:
+      - .:/app:ro
+      - /app/node_modules
+    command: ["node", "src/index.ts"]
+    networks:
+      - mcp_network
+
+networks:
+  mcp_network:
+    external: true
+    name: mcp-tools-net

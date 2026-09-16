@@ -2,11 +2,8 @@
   "name": "@mcp/hello-world",
   "version": "0.0.1",
   "type": "module",
-  "main": "./src/index.ts",
+  "main": "src/index.ts",
   "scripts": {
     "test": "node --experimental-strip-types --experimental-test-module-mocks --test \"**/*.test.ts\""
-  },
-  "peerDependencies": {
-    "zod": "^3.0.0"
   }
 }

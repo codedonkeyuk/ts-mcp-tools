@@ -1,5 +1,20 @@
 import { z } from "zod";
 
+interface HelloWorldArgs {
+  name: string;
+}
+
+const tool = async (args: { name: string }) => {
+  return {
+    content: [
+      {
+        type: "text" as const,
+        text: `Hello, ${args.name}!`,
+      },
+    ],
+  };
+};
+
 export const helloWorldTool = {
   name: "hello_world",
   description: "A tool that greets a user by their name.",
@@ -8,14 +23,7 @@ export const helloWorldTool = {
     name: z.string().describe("The name of the person to greet"),
   },
 
-  execute: async (args: { name: string }) => {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Hello, ${args.name}!`,
-        },
-      ],
-    };
+  execute: async (args: HelloWorldArgs) => {
+    return await tool(args);
   },
 };

@@ -1,7 +1,6 @@
 # ts-mcp-tools
 
-This is a starter template for a MCP project. Its a multi module project each MCP tool is a child of the parent (/tools/*). When compiled a MCPServer is produced with all of its children and dependencies in a single JS executable file. This allows for simpler deployment. 
-
+This is a starter template for a MCP project. Its a multi module project each MCP tool is a child of the parent (/tools/*). When compiled a MCPServer is produced with all of its children and dependencies in a single JS executable file. This allows for simpler deployment.
 
 ## Commands
 
@@ -14,6 +13,30 @@ This is a starter template for a MCP project. Its a multi module project each MC
 | `npm run validate` | validate code using typescript compiler. Does not generate files           |
 | `npm run build`    | builds the executable bundle uyusing esbuild                               |
 
-## General Instructions
+## Instructions
 
-Out of the box you can build a hello world example. Before coding you should attempt to install this into your LLM as is. From first hand experience each LLM client is very different. It might not work and you don't want to waste your time building something that does not work. *FYI* This has been tested on Libre Chat.
+### Setting up Docker
+
+This project has been designed to be deployed as docker compose container, and is accessible over a network bridge.
+
+To create the bridge issues the following command on your target server.
+
+```
+docker network create mcp-tools-net
+```
+
+Update your main project to use that bridge
+
+```
+services:
+  LLMChatService:
+  ...
+  networks:
+    - mcp_network
+...
+...
+networks:
+  mcp_network:
+    external: true
+    name: mcp-tools-net
+```

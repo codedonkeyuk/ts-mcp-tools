@@ -6,27 +6,28 @@
   "author": "Leigh",
   "type": "module",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "private": true,
   "workspaces": [
     "tools/*"
   ],
   "scripts": {
     "clean": "npx prettier . --write",
-    "validate": "tsc --noEmit",
-    "prebuild": "npx prettier . --check && tsc --noEmit",
-    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --banner:js=\"#!/usr/bin/env node\" --outfile=dist/index.js",
-    "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
-    "test": "npm test --workspaces --if-present && node --experimental-strip-types --experimental-test-module-mocks --test \"src/**/*.test.ts\""
+    "validate": "tsc && npx prettier . --check",
+    "start": "node src/index.ts",
+    "test": "npm test --workspaces --if-present && node --experimental-strip-types --experimental-test-module-mocks --test \"src/**/*.test.ts\"",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^26.1.1",
-    "esbuild": "^0.28.2",
     "prettier": "3.9.5",
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "@modelcontextprotocol/express": "^2.0.0",
+    "@modelcontextprotocol/node": "^2.0.0",
     "@modelcontextprotocol/server": "^2.0.0",
+    "express": "^5.2.1",
     "zod": "^4.6.5"
   }
 }

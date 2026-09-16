@@ -22,19 +22,30 @@ mock.module("@modelcontextprotocol/server", {
   namedExports: {
     McpServer: class {
       registerTool = registerToolMock;
-      connect = mock.fn(async () => {});
     },
+    createMcpHandler: mock.fn(() => mock.fn()),
   },
 });
 
-mock.module("@modelcontextprotocol/server/stdio", {
+mock.module("@modelcontextprotocol/express", {
   namedExports: {
-    StdioServerTransport: class {},
+    createMcpExpressApp: mock.fn(() => ({
+      all: mock.fn(),
+      listen: mock.fn((port, cb) => {
+        if (typeof cb === "function") cb();
+      }),
+    })),
+  },
+});
+
+mock.module("@modelcontextprotocol/node", {
+  namedExports: {
+    toNodeHandler: mock.fn(() => mock.fn()),
   },
 });
 
 test("registers helloWorld tool with correct handler", async () => {
-  await import("./index.ts");
+  await import(`./index.ts?update=${Date.now()}`);
 
   assert.equal(registerToolMock.mock.calls.length, 1);
 
