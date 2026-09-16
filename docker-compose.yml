@@ -6,7 +6,6 @@ services:
     working_dir: /app
     volumes:
       - .:/app:ro
-      - /app/node_modules
     command: ["node", "src/index.ts"]
     networks:
       - mcp_network
