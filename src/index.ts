@@ -1,21 +1,28 @@
 import { McpServer, createMcpHandler } from "@modelcontextprotocol/server";
 import { toNodeHandler } from "@modelcontextprotocol/node";
-import { helloWorldTool } from "@mcp/hello-world";
+
 import express, { type Request, type Response } from "express";
+import tools from "./tools.ts";
 
-const server = new McpServer({
-  name: "ts-mcp-tools-server",
-  version: "2.0.0",
-});
+function createServer() {
+  const server = new McpServer({
+    name: "ts-mcp-tools-server",
+    version: "2.0.0",
+  });
 
-server.registerTool(
-  helloWorldTool.name,
-  {
-    description: helloWorldTool.description,
-    inputSchema: helloWorldTool.schema,
-  },
-  helloWorldTool.execute,
-);
+  tools.forEach((tool) => {
+    server.registerTool(
+      tool.name,
+      {
+        description: tool.description,
+        inputSchema: tool.schema,
+      },
+      tool.execute,
+    );
+  });
+
+  return server;
+}
 
 const app = express();
 app.use(express.json());
@@ -24,7 +31,7 @@ app.get("/ping", (req: Request, res: Response) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-const mcpHandler = createMcpHandler(() => server);
+const mcpHandler = createMcpHandler(createServer);
 const nodeHandler = toNodeHandler(mcpHandler);
 
 app.all("/mcp", (req: Request, res: Response) => {
@@ -32,6 +39,6 @@ app.all("/mcp", (req: Request, res: Response) => {
 });
 
 const PORT = 3000;
-app.listen(PORT, () => {
+export const appServer = app.listen(PORT, () => {
   console.error(`MCP Stateless Server running on port ${PORT}`);
 });

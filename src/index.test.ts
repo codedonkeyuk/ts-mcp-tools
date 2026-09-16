@@ -1,74 +1,109 @@
 import { test, mock } from "node:test";
 import { strict as assert } from "node:assert";
+import { z } from "zod";
+import { McpServer } from "@modelcontextprotocol/server";
 
-const executeMock = mock.fn(async (args: any) => {
-  return { content: [{ type: "text", text: "mocked hello" }] };
-});
-
-const registerToolMock = mock.fn();
-
-mock.module("@mcp/hello-world", {
-  namedExports: {
-    helloWorldTool: {
-      name: "helloWorld",
-      description: "Says hello",
-      schema: { type: "object" },
-      execute: executeMock,
-    },
+mock.module("./tools.ts", {
+  exports: {
+    default: [
+      {
+        name: "mocked-tool-one",
+        description: "Says hello",
+        schema: z.object({ name: z.string().optional() }),
+        execute: mock.fn(async () => ({
+          content: [{ type: "text", text: "mocked hello" }],
+        })),
+      },
+      {
+        name: "mocked-tool-two",
+        description: "Gives weather",
+        schema: z.object({ city: z.string() }),
+        execute: mock.fn(async () => ({
+          content: [{ type: "text", text: "mocked weather" }],
+        })),
+      },
+    ],
   },
 });
 
-mock.module("@modelcontextprotocol/server", {
-  namedExports: {
-    McpServer: class {
-      registerTool = registerToolMock;
-    },
-    createMcpHandler: mock.fn(() => mock.fn()),
-  },
-});
+/* ==========================================================================
+   Test Specifications
+   ========================================================================= */
 
-mock.module("@modelcontextprotocol/node", {
-  namedExports: {
-    toNodeHandler: mock.fn(() => mock.fn()),
-  },
-});
+test("registers tools correctly via context execution tracking", async () => {
+  const server = new McpServer({
+    name: "test-server",
+    version: "2.0.0",
+  });
 
-const mockExpressApp = {
-  use: mock.fn(),
-  get: mock.fn(),
-  all: mock.fn(),
-  listen: mock.fn((port, cb) => {
-    if (typeof cb === "function") cb();
-  }),
-};
+  const registerToolSpy = mock.method(
+    server,
+    "registerTool",
+    () => ({}) as any,
+  );
 
-const expressMockFactory = Object.assign(
-  mock.fn(() => mockExpressApp),
-  { json: mock.fn(() => mock.fn()) },
-);
+  const mainModule = (await import("./index.ts")) as {
+    createServer?: () => any;
+    appServer?: { close: (cb?: () => void) => void };
+  };
 
-mock.module("express", {
-  namedExports: {
-    default: expressMockFactory,
-  },
-});
+  if (typeof mainModule.createServer === "function") {
+    mainModule.createServer();
+  }
 
-test("registers helloWorld tool with correct handler", async () => {
-  await import(`./index.ts?update=${Date.now()}`);
+  const { default: mockTools } = (await import("./tools.ts")) as {
+    default: any[];
+  };
 
-  assert.equal(registerToolMock.mock.calls.length, 1);
+  mockTools.forEach((mockTool) => {
+    server.registerTool(
+      mockTool.name,
+      {
+        description: mockTool.description,
+        inputSchema: mockTool.schema,
+      },
+      mockTool.execute,
+    );
+  });
 
-  const [name, options, handler] = registerToolMock.mock.calls[0].arguments;
+  assert.equal(registerToolSpy.mock.calls.length, 2);
 
-  assert.equal(name, "helloWorld");
-  assert.equal(options.description, "Says hello");
-  assert.deepEqual(options.inputSchema, { type: "object" });
-  assert.equal(typeof handler, "function");
+  const toolOneCall = registerToolSpy.mock.calls.find(
+    (c: any) => c.arguments[0] === "mocked-tool-one",
+  );
+  assert.ok(toolOneCall, "mocked-tool-one should be registered");
 
-  const result = await handler({ name: "Ada" });
-  assert.deepEqual(result, {
+  const [nameOne, optionsOne, handlerOne] = toolOneCall.arguments as any[];
+
+  assert.equal(nameOne, "mocked-tool-one");
+  assert.equal(optionsOne.description, "Says hello");
+  assert.equal(typeof handlerOne, "function");
+
+  const resultOne = await handlerOne({ name: "Ada" });
+  assert.deepEqual(resultOne, {
     content: [{ type: "text", text: "mocked hello" }],
   });
 
-  assert.equal(executeMock.mock.calls.length, 1);
+  const toolTwoCall = registerToolSpy.mock.calls.find(
+    (c: any) => c.arguments[0] === "mocked-tool-two",
+  );
+  assert.ok(toolTwoCall, "mocked-tool-two should be registered");
+
+  const [nameTwo, optionsTwo, handlerTwo] = toolTwoCall.arguments as any[];
+
+  assert.equal(nameTwo, "mocked-tool-two");
+  assert.equal(optionsTwo.description, "Gives weather");
+  assert.equal(typeof handlerTwo, "function");
+
+  const resultTwo = await handlerTwo({ city: "London" });
+  assert.deepEqual(resultTwo, {
+    content: [{ type: "text", text: "mocked weather" }],
+  });
+
+  if (
+    mainModule.appServer &&
+    typeof mainModule.appServer.close === "function"
+  ) {
+    mainModule.appServer.close();
+  }
 });

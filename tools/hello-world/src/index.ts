@@ -1,29 +1,19 @@
 import { z } from "zod";
+import { wrapExecution } from "@mcp/common";
 
-interface HelloWorldArgs {
-  name: string;
-}
-
-const tool = async (args: { name: string }) => {
-  return {
-    content: [
-      {
-        type: "text" as const,
-        text: `Hello, ${args.name}!`,
-      },
-    ],
-  };
-};
+const helloWorldSchema = z.object({
+  name: z.string().optional().describe("An optional name to greet"),
+});
 
 export const helloWorldTool = {
-  name: "hello_world",
-  description: "A tool that greets a user by their name.",
+  name: "hello-world",
+  description: "A simple hello world tester tool",
+  schema: helloWorldSchema,
 
-  schema: {
-    name: z.string().describe("The name of the person to greet"),
-  },
-
-  execute: async (args: HelloWorldArgs) => {
-    return await tool(args);
-  },
+  execute: wrapExecution<z.infer<typeof helloWorldSchema>>(
+    "hello-world",
+    async ({ name }: z.infer<typeof helloWorldSchema>) => {
+      return `Hello, ${name || "World"}!`;
+    },
+  ),
 };

@@ -1,13 +1,11 @@
 import assert from "node:assert";
 import { test } from "node:test";
-import { z } from "zod";
 import { helloWorldTool } from "./index.ts";
 
 test("helloWorldTool.schema validates correct input", () => {
   const validData = { name: "World" };
 
-  const runtimeSchema = z.object(helloWorldTool.schema);
-  const result = runtimeSchema.parse(validData);
+  const result = helloWorldTool.schema.parse(validData);
 
   assert.strictEqual(result.name, "World");
 });
@@ -26,5 +24,7 @@ test("helloWorldTool.execute returns correctly formatted response", async () => 
 test("helloWorldTool.execute handles unusual but valid string inputs", async () => {
   const args = { name: "123_Special_Chars!" };
   const result = await helloWorldTool.execute(args);
+
+  // FIX: Updated expected value to matching two exclamation marks "!!" from the source code
   assert.strictEqual(result.content[0].text, "Hello, 123_Special_Chars!!");
 });
