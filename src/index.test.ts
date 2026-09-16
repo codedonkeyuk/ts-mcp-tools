@@ -27,20 +27,29 @@ mock.module("@modelcontextprotocol/server", {
   },
 });
 
-mock.module("@modelcontextprotocol/express", {
-  namedExports: {
-    createMcpExpressApp: mock.fn(() => ({
-      all: mock.fn(),
-      listen: mock.fn((port, cb) => {
-        if (typeof cb === "function") cb();
-      }),
-    })),
-  },
-});
-
 mock.module("@modelcontextprotocol/node", {
   namedExports: {
     toNodeHandler: mock.fn(() => mock.fn()),
+  },
+});
+
+const mockExpressApp = {
+  use: mock.fn(),
+  get: mock.fn(),
+  all: mock.fn(),
+  listen: mock.fn((port, cb) => {
+    if (typeof cb === "function") cb();
+  }),
+};
+
+const expressMockFactory = Object.assign(
+  mock.fn(() => mockExpressApp),
+  { json: mock.fn(() => mock.fn()) },
+);
+
+mock.module("express", {
+  namedExports: {
+    default: expressMockFactory,
   },
 });
 

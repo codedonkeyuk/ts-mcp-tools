@@ -1,8 +1,7 @@
 import { McpServer, createMcpHandler } from "@modelcontextprotocol/server";
-import { createMcpExpressApp } from "@modelcontextprotocol/express";
 import { toNodeHandler } from "@modelcontextprotocol/node";
 import { helloWorldTool } from "@mcp/hello-world";
-import { type Request, type Response } from "express";
+import express, { type Request, type Response } from "express";
 
 const server = new McpServer({
   name: "ts-mcp-tools-server",
@@ -18,7 +17,12 @@ server.registerTool(
   helloWorldTool.execute,
 );
 
-const app = createMcpExpressApp();
+const app = express();
+app.use(express.json());
+
+app.get("/ping", (req: Request, res: Response) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
 
 const mcpHandler = createMcpHandler(() => server);
 const nodeHandler = toNodeHandler(mcpHandler);
