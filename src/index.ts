@@ -24,7 +24,7 @@ const mcpHandler = createMcpHandler(() => server);
 const nodeHandler = toNodeHandler(mcpHandler);
 
 app.all("/mcp", (req: Request, res: Response) => {
-  void nodeHandler(req, res);
+  void nodeHandler(req, res, req.body);
 });
 
 const PORT = 3000;
