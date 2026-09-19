@@ -1,5 +1,7 @@
 # Database
 
+This database project is only suitable for a home setup / local network only, not a public server because it wont handle the traffic. You can easily switch this project a robust database by changing the kysely driver. Kysely was designed to work with most databases, I have not tested it yet. Not 100% on how easy that is.
+
 ## Setup database in tool or module
 
 ```ts

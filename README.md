@@ -115,3 +115,7 @@ function createServer() {
   return server;
 }
 ```
+
+### Setup database
+
+[You can find instructions for that in it own README](./mcp-packages/database/README.md)
