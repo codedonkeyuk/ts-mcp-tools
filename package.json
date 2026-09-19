@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "clean": "npx prettier . --write",
-    "validate": "tsc && npx prettier . --check",
+    "validate": "npx prettier . --check && tsc --noEmit && npx cspell README.md",
     "serve": "node src/index.ts",
     "test": "npm test --workspaces --if-present && node --experimental-strip-types --experimental-test-module-mocks --test \"src/**/*.test.ts\"",
     "prepare": "husky"
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.1",
+    "cspell": "^10.0.1",
     "husky": "^9.1.7",
     "prettier": "3.9.5",
     "typescript": "^7.0.2"
