@@ -8,8 +8,8 @@
   "main": "dist/index.js",
   "private": true,
   "workspaces": [
-    "packages/*",
-    "tools/*"
+    "mcp-packages/*",
+    "mcp-servers/*"
   ],
   "scripts": {
     "clean": "npx prettier . --write",

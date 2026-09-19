@@ -1,8 +1,8 @@
 import { McpServer, createMcpHandler } from "@modelcontextprotocol/server";
 import { toNodeHandler } from "@modelcontextprotocol/node";
+import registerHelloWorld from "@mcp-servers/hello-world";
 
 import express, { type Request, type Response } from "express";
-import tools from "./tools.ts";
 
 function createServer() {
   const server = new McpServer({
@@ -10,16 +10,7 @@ function createServer() {
     version: "2.0.0",
   });
 
-  tools.forEach((tool) => {
-    server.registerTool(
-      tool.name,
-      {
-        description: tool.description,
-        inputSchema: tool.schema,
-      },
-      tool.execute,
-    );
-  });
+  registerHelloWorld(server);
 
   return server;
 }

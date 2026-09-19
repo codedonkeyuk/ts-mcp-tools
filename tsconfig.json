@@ -8,5 +8,5 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "include": ["src/**/*.ts", "tools/**/*.ts", "packages/**/*.ts"]
+  "include": ["src/**/*.ts", "mcp-servers/**/*.ts", "mcp-packages/**/*.ts"]
 }

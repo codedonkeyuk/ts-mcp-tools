@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { wrapExecution } from "@mcp/common";
+import { wrapExecution } from "@mcp-packages/common";
 
 const helloWorldSchema = z.object({
   name: z.string().optional().describe("An optional name to greet"),
@@ -15,5 +15,5 @@ export const helloWorldTool = {
     async ({ name }: z.infer<typeof helloWorldSchema>) => {
       return `Hello, ${name || "World"}!`;
     },
-  ),
+  ) as (args: any, ctx: any) => Promise<any>,
 };

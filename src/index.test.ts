@@ -3,26 +3,29 @@ import { strict as assert } from "node:assert";
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/server";
 
-mock.module("./tools.ts", {
+mock.module("@mcp-servers/hello-world", {
   exports: {
-    default: [
-      {
-        name: "mocked-tool-one",
-        description: "Says hello",
-        schema: z.object({ name: z.string().optional() }),
-        execute: mock.fn(async () => ({
-          content: [{ type: "text", text: "mocked hello" }],
-        })),
-      },
-      {
-        name: "mocked-tool-two",
-        description: "Gives weather",
-        schema: z.object({ city: z.string() }),
-        execute: mock.fn(async () => ({
-          content: [{ type: "text", text: "mocked weather" }],
-        })),
-      },
-    ],
+    default: mock.fn((server: McpServer) => {
+      server.registerTool(
+        "mocked-tool-one",
+        {
+          description: "Says hello",
+          inputSchema: z.object({ name: z.string().optional() }),
+        },
+        async () =>
+          ({ content: [{ type: "text", text: "mocked hello" }] }) as any,
+      );
+
+      server.registerTool(
+        "mocked-tool-two",
+        {
+          description: "Gives weather",
+          inputSchema: z.object({ city: z.string() }),
+        },
+        async () =>
+          ({ content: [{ type: "text", text: "mocked weather" }] }) as any,
+      );
+    }),
   },
 });
 
@@ -39,32 +42,17 @@ test("registers tools correctly via context execution tracking", async () => {
   const registerToolSpy = mock.method(
     server,
     "registerTool",
-    () => ({}) as any,
+    server.registerTool.bind(server),
   );
 
   const mainModule = (await import("./index.ts")) as {
-    createServer?: () => any;
+    default?: any;
     appServer?: { close: (cb?: () => void) => void };
   };
 
-  if (typeof mainModule.createServer === "function") {
-    mainModule.createServer();
-  }
-
-  const { default: mockTools } = (await import("./tools.ts")) as {
-    default: any[];
-  };
-
-  mockTools.forEach((mockTool) => {
-    server.registerTool(
-      mockTool.name,
-      {
-        description: mockTool.description,
-        inputSchema: mockTool.schema,
-      },
-      mockTool.execute,
-    );
-  });
+  const { default: registerHelloWorld } =
+    (await import("@mcp-servers/hello-world")) as any;
+  registerHelloWorld(server);
 
   assert.equal(registerToolSpy.mock.calls.length, 2);
 
