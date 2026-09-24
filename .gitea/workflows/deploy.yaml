@@ -15,4 +15,4 @@ jobs:
 
       - name: Run Node Tests Instantly
         run: |
-          node --test --test-reporter=junit --test-reporter-destination=test-results/report.xml || true
+          node --test
