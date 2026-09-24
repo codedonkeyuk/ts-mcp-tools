@@ -13,11 +13,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Create Report Directory
-        run: mkdir -p test-results
       - name: Run Node Tests Instantly
         run: |
           node --test --test-reporter=junit --test-reporter-destination=test-results/report.xml || true
-
-      - name: Output Test Results to Log
-        run: cat test-results/report.xml
