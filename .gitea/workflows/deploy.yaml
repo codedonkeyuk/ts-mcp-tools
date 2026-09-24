@@ -17,5 +17,4 @@ jobs:
         run: npm install
 
       - name: Run Node Tests Instantly
-        run: |
-          node --test
+        run: npm run test
